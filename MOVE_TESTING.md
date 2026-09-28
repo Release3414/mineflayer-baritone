@@ -65,7 +65,7 @@ Tests the specific issue with MoveForwardUp thinking it can stand on blocks that
 ```bash
 node test_moves.js virtualBlocksTest  
 ```
-Tests the virtual block system used in pathfinding chains - currently **failing** as expected, demonstrating the exact issue you reported!
+Tests the virtual block system used in pathfinding chains. The scenario marks a support block as virtual air and asserts that a move cannot stand on that support. Treat a failure as a regression in virtual-world handling; it is not an expected failure.
 
 ## Available Test Scenarios
 
@@ -208,23 +208,21 @@ forbiddenPositions: [                // Positions that must NOT be generated
 5. **Visualize**: Display 3D ASCII representation
 6. **Report**: Show results, timing, and issues
 
-## Debugging the MoveForwardUp Issue
+## Debugging virtual support state
 
-The testing system has already identified the exact issue you reported:
+The virtual block scenarios are designed to catch moves that ignore a support block removed earlier in the same planned path:
 
 ```bash
 node test_moves.js virtualBlocksTest
 ```
 
-**Result**: ❌ FAILED - "Forbidden position 1,64,0 was generated"
+When the test fails with `Forbidden position 1,64,0 was generated`, inspect the movement that produced that neighbor. The test setup is:
 
-This test proves that MoveForwardUp is incorrectly generating moves to positions where the support block has been virtually broken. The test shows:
+1. Block at (1,63,0) is marked as virtual `air`.
+2. A move to (1,64,0) is forbidden because it would stand on that virtual air.
+3. The failure identifies a mismatch between the movement's support check and the node's virtual overlay.
 
-1. Block at (1,63,0) is marked as virtual "air"
-2. MoveForward still generates a move to (1,64,0) 
-3. This violates the constraint that you can't stand on virtual air
-
-This confirms your original bug report and provides a reproducible test case!
+This gives contributors a reproducible regression case without declaring the current implementation broken in advance.
 
 ## Performance Analysis
 

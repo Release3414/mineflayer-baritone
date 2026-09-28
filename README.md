@@ -36,7 +36,9 @@ const { Vec3 } = require("vec3");
 
 const bot = mineflayer.createBot({ username: "PathfinderBot" });
 
-bot.loadPlugin(pathfinder);
+// The loader accepts an options object; wrapping it keeps the Mineflayer
+// plugin form while using the default physics.
+bot.loadPlugin((bot) => pathfinder(bot, {}));
 
 // for custom physics use
 // pathfinder(bot, {useCustomPhysics: true})
@@ -60,8 +62,12 @@ bot.once("spawn", async () => {
 ### Basic Navigation
 
 ```js
-// Direct pathfinding (best for short distances < 75 blocks)
+// Direct A* pathfinding (best for short distances < 75 blocks)
 await bot.ashfinder.goto(goal);
+
+// Automatically choose direct A* or sequential waypoint navigation.
+// This is the recommended entry point for longer routes.
+await bot.ashfinder.gotoSmart(goal);
 ```
 
 ---
@@ -280,6 +286,8 @@ const nearGoal = new goals.GoalNear(targetPos, 5);
 ### Methods
 
 - `goto(goal)` - Navigate to a goal using direct pathfinding
+- `gotoSmart(goal, options)` - Choose direct or waypoint navigation by distance
+- `gotoWithWaypoints(goal, waypointThreshold)` - Force the waypoint navigation path
 - `generatePath(goal, excludedPositions)` - Generate a path without executing it
 - `stop()` - Stop current pathfinding
 - `enableBreaking()` / `disableBreaking()` - Toggle block breaking
@@ -291,11 +299,22 @@ const nearGoal = new goals.GoalNear(targetPos, 5);
 - `bot.ashfinder.debug` - Enable/disable debug logging
 - `bot.ashfinder.stopped` - Check if pathfinding is stopped
 
+## 🧭 Architecture and Baritone parity
+
+This package is a Mineflayer pathfinder inspired by Baritone, not a direct port of Baritone's Java pathing stack. It combines A* search, registered movement implementations, virtual block overlays, partial-path replanning, waypoint navigation, and a Mineflayer path executor.
+
+The current long-distance system uses sequential waypoints. It does not yet provide Baritone's concurrent segment calculation, path splicing, incremental cost backoff, persistent compact chunk cache, or dedicated path calculation thread. See the [architecture and gap analysis](docs/BARITONE_GAP_ANALYSIS.md) before relying on Baritone-level behavior for long paths.
+
 ---
 
-## EXTRA
+## Custom physics
 
-- if you want to use custom physics DO NOT USE `bot.loadPlugin()` instead just use `inject(bot, {useCustomPhysics: true})`
+To opt into the custom physics implementation, call the loader directly after
+creating the bot. Do not load it through `bot.loadPlugin()`:
+
+```js
+pathfinder(bot, { useCustomPhysics: true });
+```
 
 ## 🤝 Contributing
 
