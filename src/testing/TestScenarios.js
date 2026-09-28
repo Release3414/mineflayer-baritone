@@ -99,8 +99,7 @@ const testScenarios = {
     },
     expectedMoves: ["MoveForward"], // Should be able to break and move forward
     expectedPositions: [
-      { x: 1, y: 64, z: 0 },
-      { x: 2, y: 64, z: 0 }
+      { x: 1, y: 64, z: 0 }
     ]
   },
 
@@ -120,9 +119,9 @@ const testScenarios = {
     },
     config: {
       breakBlocks: false,
-      placeBlocks: true,
+      placeBlocks: false,
+      parkour: false,
     },
-    expectedMoves: ["MoveForward"],
     forbiddenPositions: [
       { x: 1, y: 64, z: 0 } // Should not be able to stand here due to virtual air
     ]

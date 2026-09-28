@@ -16,6 +16,10 @@ class MoveForward extends Move {
   addNeighbors(neighbors, node, originVec, end) {
     const below = node.down(1);
     const head = node.up(1);
+    if (
+      this.config.blocksToStayAway.includes(this.getBlock(node)?.name) ||
+      this.config.blocksToStayAway.includes(this.getBlock(head)?.name)
+    ) return;
     const canPlace = this.config.placeBlocks && this.hasScaffoldingBlocks();
     const canBreak = this.config.breakBlocks;
 
@@ -111,7 +115,7 @@ class MoveForward extends Move {
     // --- continue with normal checks if not standable ---
     const canScaffold =
       !isSolidBelow &&
-      this.isAir(node) &&
+      (this.isAir(node) || (canBreak && this.isBreakable(node))) &&
       canPlace &&
       this.canPlaceBlock(below) &&
       !this.manager.isAreaMarkedNode(below) &&

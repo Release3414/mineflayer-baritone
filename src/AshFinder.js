@@ -174,29 +174,29 @@ class AshFinderPlugin extends EventEmitter {
     // If the goal chunk isn't loaded yet, shorten the search timeout so we
     // don't wait 30 s for a path that can't exist yet.
     const defaultTimeout = this.config.thinkTimeout;
-    const isLoaded = this.bot.blockAt(goal.getPosition()) !== null;
-    if (!isLoaded) {
-      if (this.debug)
-        console.log(
-          "[AshFinder] Goal chunk not loaded — using 1s think timeout",
-        );
-      this.config.thinkTimeout = 1000;
-    }
-
-    // Validate elytra if fly mode is on.
-    if (this.config.fly) {
-      const torsoSlot = this.bot.getEquipmentDestSlot("torso");
-      const wearing = this.bot.inventory.slots[torsoSlot];
-      if (!wearing?.name.includes("elytra")) {
-        const inInventory = this.bot.inventory
-          .items()
-          .find((i) => i.name.includes("elytra"));
-        if (!inInventory)
-          throw new Error("Fly mode is enabled but no elytra found.");
-      }
-    }
-
     try {
+      const isLoaded = this.bot.blockAt(goal.getPosition()) !== null;
+      if (!isLoaded) {
+        if (this.debug)
+          console.log(
+            "[AshFinder] Goal chunk not loaded — using 1s think timeout",
+          );
+        this.config.thinkTimeout = 1000;
+      }
+
+      // Validate elytra if fly mode is on.
+      if (this.config.fly) {
+        const torsoSlot = this.bot.getEquipmentDestSlot("torso");
+        const wearing = this.bot.inventory.slots[torsoSlot];
+        if (!wearing?.name.includes("elytra")) {
+          const inInventory = this.bot.inventory
+            .items()
+            .find((i) => i.name.includes("elytra"));
+          if (!inInventory)
+            throw new Error("Fly mode is enabled but no elytra found.");
+        }
+      }
+
       const { path, status, bestNode } = await this.generatePath(goal, options);
 
       if (this.debug) {

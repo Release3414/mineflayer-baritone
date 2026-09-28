@@ -1,5 +1,7 @@
 node_modules
 package-lock.json
+test-results-*.json
+auto-test-results-*.json
 
 src/saving.js
 src/parkour.js

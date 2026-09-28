@@ -7,7 +7,10 @@
     "release:patch": "npm version patch && npm publish && git push --tags",
     "release:minor": "npm version minor && npm publish && git push --tags",
     "release:major": "npm version major && npm publish && git push --tags",
-    "test": "node ./src/test.js localhost 46803"
+    "test": "npm run test:unit && npm run test:moves",
+    "test:unit": "node --test test/regression.test.js",
+    "test:moves": "node test_moves.js",
+    "test:server": "node ./src/test.js localhost 46803"
   },
   "keywords": [
     "miner-org",

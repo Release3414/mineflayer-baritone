@@ -4,6 +4,12 @@ A comprehensive testing framework for the mineflayer-baritone movement algorithm
 
 ## Quick Start
 
+`npm test` runs the regression tests and movement scenarios without a Minecraft server.
+`npm run test:server` starts the interactive bot used for testing against a server
+at `localhost:46803`.
+`node test_moves.js --auto-test` generates exploratory scenarios for every move;
+some generated worlds do not meet the move's prerequisites and may fail validation.
+
 ```bash
 # Run all tests
 node test_moves.js
@@ -216,7 +222,7 @@ The virtual block scenarios are designed to catch moves that ignore a support bl
 node test_moves.js virtualBlocksTest
 ```
 
-When the test fails with `Forbidden position 1,64,0 was generated`, inspect the movement that produced that neighbor. The test setup is:
+When the test fails with `Forbidden position 1,64,0 was generated`, inspect the movement that produced that neighbor. Placing and parkour are disabled to isolate the support check. The test setup is:
 
 1. Block at (1,63,0) is marked as virtual `air`.
 2. A move to (1,64,0) is forbidden because it would stand on that virtual air.

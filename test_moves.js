@@ -60,6 +60,7 @@ class EasyMoveTestRunner {
       this.testRunner.exportResults(filename);
       
       console.log(`\n📄 Detailed results saved to: ${filename}`);
+      if (results.some(result => !result.success)) process.exitCode = 1;
       
     } catch (error) {
       console.error('❌ Failed to run tests:', error.message);
@@ -91,6 +92,7 @@ class EasyMoveTestRunner {
       } else {
         console.log(`\n❌ Test '${testName}' failed.`);
         console.log('Issues:', result.validation.issues);
+        process.exitCode = 1;
       }
       
     } catch (error) {
@@ -283,14 +285,9 @@ class EasyMoveTestRunner {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       const filename = `auto-test-results-${timestamp}.json`;
       
-      const exportData = {
-        timestamp: new Date().toISOString(),
-        type: 'auto-generated',
-        results: results
-      };
-      
-      require('fs').writeFileSync(filename, JSON.stringify(exportData, null, 2));
+      this.testRunner.exportResults(filename, { type: 'auto-generated' });
       console.log(`\n📄 Auto-test results saved to: ${filename}`);
+      if (results.some(result => !result.success)) process.exitCode = 1;
       
     } catch (error) {
       console.error('❌ Failed to run auto-tests:', error.message);
